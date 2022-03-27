@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-regular-deploy
+  labels:
+    app: app-regular-deploy-label
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: app-reg
+  template:
+    metadata:
+      labels:
+        project: app-reg
+    spec:
+      containers:
+        - name : app-regular
+          image: dobarden/task02:v1
+          ports:
+          - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-canary-deploy
+  labels:
+    app: app-canary-deploy-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: app-can
+  template:
+    metadata:
+      labels:
+        project: app-can
+    spec:
+      containers:
+        - name : app-canary
+          image: dobarden/task02:v1.0.1
+          ports:
+          - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-for-regular
+spec:
+  selector:
+    project: app-reg
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-for-canary
+spec:
+  selector:
+    project: app-can
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
